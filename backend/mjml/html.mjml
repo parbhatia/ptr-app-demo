@@ -1,0 +1,163 @@
+<mjml>
+  <mj-head>
+    <mj-title>PTR Inspection Services Package</mj-title>
+    <mj-font
+      name="Roboto"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,500"
+    ></mj-font>
+    <mj-attributes>
+      <mj-all font-family="Roboto, Helvetica, sans-serif"></mj-all>
+      <mj-text
+        font-weight="500"
+        font-size="16px"
+        color="#1f1f1f"
+        line-height="20px"
+      ></mj-text>
+      <mj-section padding="0px"></mj-section>
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#fafafa">
+    <mj-section border="1px solid #e0e0e0">
+      <!-- Company LOGO -->
+      <mj-section background-color="#FFFFFF">
+        <mj-column width="100%">
+          <mj-image
+            src="{{companyLogoLarge}}"
+            width="350px"
+            href=""
+            fluid-on-mobile="true"
+          ></mj-image>
+        </mj-column>
+      </mj-section>
+
+      <!-- Message -->
+      <mj-section background-color="#FFFFFF">
+        <mj-column width="100%">
+          <mj-text>
+            <p>Dear {{name}},</p>
+            <p style="white-space: pre-line">{{message}}</p>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+      <!-- Property Information-->
+      <mj-section background-color="#FFFFFF">
+        <mj-column width="100%">
+          <mj-divider border-width="1px" border-color="#E0E0E0"></mj-divider>
+        </mj-column>
+        <mj-column width="100%">
+          <mj-image
+            border-radius="5px"
+            width="500px"
+            fluid-on-mobile="true"
+            src="{{coverPhoto}}"
+            href=""
+          />
+        </mj-column>
+        <mj-column width="100%">
+          <mj-text
+            align="center"
+            font-weight="400"
+            padding="0px"
+            font-size="16px"
+            line-height="20px"
+            >{{address}}</mj-text
+          >
+          <mj-text
+            align="center"
+            font-weight="400"
+            padding="0px"
+            font-size="13px"
+            color="#787878"
+            line-height="20px"
+            >{{city}}, ON</mj-text
+          >
+        </mj-column>
+      </mj-section>
+      <!-- Divider -->
+      <mj-section background-color="#FFFFFF">
+        <mj-column width="100%">
+          <mj-divider border-width="1px" border-color="#E0E0E0"></mj-divider>
+        </mj-column>
+      </mj-section>
+      <!--View Shareable Link Button-->
+      <mj-section background-color="#FFFFFF">
+        <mj-column>
+          <mj-button
+            width="250px"
+            background-color="#f2f5d2"
+            color="#48591d"
+            border="1px solid #68812b"
+            font-size="17px"
+            href="{{shareableUrl}}"
+          >
+            View Inspection Package
+          </mj-button>
+        </mj-column>
+      </mj-section>
+      <!-- Divider -->
+      <mj-section background-color="#FFFFFF">
+        <mj-column width="100%">
+          <mj-divider border-width="1px" border-color="#E0E0E0"></mj-divider>
+        </mj-column>
+      </mj-section>
+      <!-- Contact Info -->
+      <mj-section background-color="#FFFFFF">
+        <mj-column width="15%">
+          <mj-image
+            padding-right="0px"
+            padding-left="25px"
+            align="left"
+            width="100px"
+            border-radius="50%"
+            src="{{profilePhoto}}"
+          ></mj-image>
+        </mj-column>
+        <mj-column width="85%">
+          <mj-text padding="0 25px">
+            <p style="color: #fffff; line-height: 8px">
+              {{userFullName}} {{nameAdditional}}
+            </p>
+            <p style="color: #fffff; font-size: 14px; line-height: 8px">
+              {{namePosition}}
+            </p>
+            <p style="color: #fffff; font-size: 14px; line-height: 8px">
+              {{emailFrom}}
+            </p>
+            <p style="color: #fffff; font-size: 14px; line-height: 8px">
+              {{phoneNumber}}
+            </p>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+      <!-- Divider -->
+      <mj-section background-color="#FFFFFF">
+        <mj-column width="100%">
+          <mj-divider border-width="1px" border-color="#E0E0E0"></mj-divider>
+        </mj-column>
+      </mj-section>
+      <mj-section background-color="#FFFFFF">
+        <mj-column width="35%">
+          <mj-table>
+            <tr style="list-style: none; line-height: 1; text-align: center">
+              <td>
+                <a href="{{linkedinUrl}}">
+                  <img width="21" src="{{linkedinIcon}}" />
+                </a>
+              </td>
+              <td>
+                <a href="{{googlebusinessUrl}}">
+                  <img width="21" src="{{googleIcon}}" />
+                </a>
+              </td>
+              <td>
+                <a href="{{companyWebsite}}">
+                  <img width="21" src="{{personalsiteIcon}}" />
+                </a>
+              </td>
+            </tr>
+          </mj-table>
+        </mj-column>
+      </mj-section>
+    </mj-section>
+  </mj-body>
+</mjml>

@@ -1,0 +1,1 @@
+update photo set type = 'default', cdn_keyid = null where type = 'cover_photo' AND photo_category_id = $1;

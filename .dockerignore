@@ -1,0 +1,15 @@
+**/node_modules
+**/Dockerfile*
+**/docker-compose*
+**/.dockerignore
+**/.git
+**/.env
+**/*.env
+**/.gitignore
+**/README.md
+**/LICENSE
+**/.vscode
+**/env
+**/*.pem
+.next/
+**/.next

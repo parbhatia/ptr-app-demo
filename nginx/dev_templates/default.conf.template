@@ -1,0 +1,308 @@
+proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=STATIC:10m inactive=7d use_temp_path=off;
+
+upstream localstack {
+    server localstack:4566;
+}
+upstream frontend {
+    server frontend:${FRONTEND_PORT};
+}
+upstream public_frontend {
+    server public_frontend:${PUBLIC_FRONTEND_PORT};
+}
+upstream backend {
+    server backend:${BACKEND_PORT};
+}
+
+map $sent_http_content_type $expires {
+    default                    off;
+    text/html                  epoch;
+    text/css                   max;
+    application/javascript     max;
+}
+
+map $status $status_text {
+  400 'Bad Request';
+  401 'Unauthorized';
+  402 'Payment Required';
+  403 'Forbidden';
+  404 'Not Found';
+  405 'Method Not Allowed';
+  406 'Not Acceptable';
+  407 'Proxy Authentication Required';
+  408 'Request Timeout';
+  409 'Conflict';
+  410 'Gone';
+  411 'Length Required';
+  412 'Precondition Failed';
+  413 'Payload Too Large';
+  414 'URI Too Long';
+  415 'Unsupported Media Type';
+  416 'Range Not Satisfiable';
+  417 'Expectation Failed';
+  418 'I\'m a teapot';
+  421 'Misdirected Request';
+  422 'Unprocessable Entity';
+  423 'Locked';
+  424 'Failed Dependency';
+  425 'Too Early';
+  426 'Upgrade Required';
+  428 'Precondition Required';
+  429 'Too Many Requests';
+  431 'Request Header Fields Too Large';
+  451 'Unavailable For Legal Reasons';
+  500 'Internal Server Error';
+  501 'Not Implemented';
+  502 'Bad Gateway';
+  503 'Service Unavailable';
+  504 'Gateway Timeout';
+  505 'HTTP Version Not Supported';
+  506 'Variant Also Negotiates';
+  507 'Insufficient Storage';
+  508 'Loop Detected';
+  510 'Not Extended';
+  511 'Network Authentication Required';
+  default 'Something is wrong';
+}
+
+#Note: In order to actually see http_origin, we need to pass Origin as a header
+#Cors Config:
+map $http_origin $cors_cred {
+    # indicates all map values are hostnames and should be parsed as suc
+
+    default "";
+    http://localhost 'true';
+    http://app.localhost 'true';
+    http://localhost:81 'true';
+    http://localhost:4566 'true';
+    #www.yourdomain.com "true;
+}
+map $http_origin $cors_origin_header {
+    # indicates all map values are hostnames and should be parsed as such
+
+    # default value
+    default 'false';
+
+    # all your domains
+    http://localhost          $http_origin;
+    http://app.localhost      $http_origin;
+    http://localhost:81      $http_origin;
+    http://localhost:4566      $http_origin;
+    #www.yourdomain.com $http_origin;
+}
+
+
+server {
+    listen 80 default_server;
+    server_name localhost;
+
+    #so that the NGINX version doesn’t appear in the response headers
+    server_tokens off;
+
+    #gzip config
+    gzip on;
+    gzip_vary on;
+    gzip_comp_level 4;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain text/css application/json application/x-javascript application/javascript text/xml application/xml application/xml+rss text/javascript application/vnd.ms-fontobject application/x-font-ttf font/opentype image/svg+xml image/x-icon;
+    gzip_disable "MSIE [1-6]\.";
+
+    location /_next/static {
+        proxy_cache STATIC;
+        proxy_pass http://public_frontend;
+
+        # For testing cache - remove before deploying to production
+        add_header X-Cache-Status $upstream_cache_status;
+    }
+
+    location /static {
+        proxy_cache STATIC;
+        proxy_ignore_headers Cache-Control;
+        proxy_cache_valid 7d;
+        proxy_pass http://public_frontend;
+
+        # For testing cache - remove before deploying to production
+        add_header X-Cache-Status $upstream_cache_status;
+    }
+
+    location /_next/image {
+        proxy_cache STATIC;
+        proxy_ignore_headers Cache-Control;
+        proxy_cache_valid 365d;
+        proxy_pass http://public_frontend;
+
+        # For testing cache - remove before deploying to production
+        add_header X-Cache-Status $upstream_cache_status;
+    }
+
+    location / {
+        proxy_pass http://public_frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        
+    }
+
+    location /aws/ {
+        include conf.d/corsdefault.conf;
+        proxy_pass http://localstack/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    location /Login {
+        return 301 $scheme://app.localhost;
+    }
+
+    location /shared/ {
+        proxy_pass http://backend/api/shared/fromPublic/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_intercept_errors on;
+    }
+}
+
+server {
+    #so that the NGINX version doesn’t appear in the response headers
+    server_tokens off;
+   
+    #gzip config
+    gzip on;
+    gzip_vary on;
+    gzip_comp_level 4;
+    gzip_min_length 10240;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain text/css application/json application/x-javascript application/javascript text/xml application/xml application/xml+rss text/javascript application/vnd.ms-fontobject application/x-font-ttf font/opentype image/svg+xml image/x-icon;
+    gzip_disable "MSIE [1-6]\.";
+    gunzip on;
+
+    listen 80;
+    server_name app.localhost;
+    # listen 81;
+    # server_name localhost;
+
+    client_max_body_size 100M;
+    # setting max_body_size in location block doesn't work..
+    
+    location = /auth {
+        internal;
+        proxy_pass http://backend;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header X-Original-URI $request_uri;
+        proxy_set_header X-Original-Remote-Addr $remote_addr;
+        proxy_set_header X-Original-Host $host;
+        proxy_intercept_errors on;
+    }
+
+    location / {
+        proxy_pass http://frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_intercept_errors on;
+
+    }
+
+    location /requestlogin {
+        proxy_pass http://backend/auth/login;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Host $host;
+        proxy_intercept_errors on;
+    }
+
+    location /requestlogout {
+        auth_request /auth;
+        proxy_pass http://backend/auth/logout;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_intercept_errors on;
+    }
+
+    location /appsocket/ {
+        # using auth for web sockets is a complicated scenario..
+        auth_request /auth;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_set_header X-NginX-Proxy false;
+
+        proxy_pass http://backend;
+        proxy_redirect off;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    location /aws/ {
+        include conf.d/corsdefault.conf;
+        proxy_pass http://localstack/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_intercept_errors on;
+    }
+
+    location /api {
+        auth_request /auth;
+        # The response header for each attribute (added by the JavaScript code) is available as $sent_http_token_attribute. 
+        auth_request_set $user $sent_http_token_user_id;
+        auth_request_set $auth_cookie $upstream_http_set_cookie;
+        add_header Set-Cookie $auth_cookie;
+        proxy_set_header user_id $user;
+
+        include conf.d/corsdefault.conf;
+        proxy_pass http://backend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_intercept_errors on;
+
+    }
+
+    location /emailwebhook {
+        proxy_pass http://backend/api/emailwebhook;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414 415 416 417 418 421 422 423 424 425 426 428 429 431 451 500 501 502 503 504 505 506 507 508 510 511 /error.html;
+
+    #testing error message page
+    location = /404.html {
+        return 404;
+    }
+
+    location = /error.html {
+        ssi on;
+        internal;
+        auth_basic off;
+        root /var/www/default;
+        include  /etc/nginx/mime.types;
+    }
+
+    #for mapping error message css
+    location ^~ /assets/css/style.css {
+        root /var/www/default;
+    }
+
+    #for mapping error message font
+    location ~* montserrat-(400|700).(eot|woff2|woff|ttf|svg) {
+        root /var/www/default;
+    }
+}

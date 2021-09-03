@@ -1,0 +1,22 @@
+.pdfContainer {
+  /* min-height: 100vh; */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background: #eee;
+}
+.pdfPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 80%;
+}
+.pdf-page-canvas {
+  display: flex;
+  border: 1px solid lightgray;
+  margin: 5px;
+  width: 100%;
+}

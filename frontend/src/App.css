@@ -1,0 +1,26 @@
+.react-pdf__Document {
+  background: lightgray;
+}
+
+/*for caoursel*/
+.pdf_document_carousel {
+  display: flex;
+  overflow-x: auto;
+  justify-content: space-between;
+}
+
+.pdf_page {
+  text-align: -webkit-center;
+}
+.react-pdf__Page__canvas {
+  padding: 10px;
+}
+
+.filepond--panel-root {
+  background-color: #ffffff;
+  border-radius: 0.3em;
+  border: 1px solid #ced6e0;
+}
+.filepond--item-panel {
+  border-radius: 0.3em;
+}

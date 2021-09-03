@@ -1,0 +1,70 @@
+services:
+  localstack:
+    build:
+      context: ./aws
+      dockerfile: Dockerfile
+    env_file:
+      - ./demo.env
+    environment:
+      - SERVICES=lambda,s3,ses,sns
+      - DEBUG=1
+      - PORT_WEB_UI=8081
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - ./aws:/opt/code/localstack/aws
+
+  proxy:
+    env_file:
+      - ./demo.env
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./nginx/dev_templates:/etc/nginx/templates
+      - ./nginx/log:/var/log/nginx
+      - ./nginx/errors:/var/www/default
+
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    env_file:
+      - ./demo.env
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./demo.env
+    volumes:
+      - ./backend:/usr/src/app
+      - "/usr/src/app/node_modules"
+    ports:
+      - 4566:4566
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./demo.env
+    volumes:
+      - "./frontend:/usr/src/app"
+      - "/usr/src/app/node_modules"
+    stdin_open: true
+    environment:
+      #assigns port to create-react-app
+      PORT: ${FRONTEND_PORT}
+
+  public_frontend:
+    build:
+      context: ./public_frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./demo.env
+    volumes:
+      - "./public_frontend:/usr/app"
+      - "/usr/app/node_modules"
+      - "/usr/app/.next"

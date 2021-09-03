@@ -1,0 +1,1 @@
+update photo set versionid = array_prepend($2, versionid), cdn_keyid = $3 where id = $1 returning id, versionid;

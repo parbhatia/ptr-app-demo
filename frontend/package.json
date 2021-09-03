@@ -1,0 +1,68 @@
+{
+  "name": "ptr-react-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@dnd-kit/core": "^1.0.2",
+    "@dnd-kit/modifiers": "^1.0.2",
+    "@dnd-kit/sortable": "^1.0.2",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "array-move": "^3.0.1",
+    "autosuggest-highlight": "^3.1.1",
+    "axios": "^0.21.1",
+    "file-saver": "^2.0.2",
+    "filepond": "^4.27.1",
+    "filepond-plugin-file-validate-size": "^2.2.4",
+    "filepond-plugin-file-validate-type": "^1.2.6",
+    "filepond-plugin-image-exif-orientation": "^1.0.11",
+    "filepond-plugin-image-preview": "^4.6.6",
+    "framer-motion": "^1.11.1",
+    "immer": "^8.0.1",
+    "js-cookie": "^2.2.1",
+    "lodash.clonedeep": "^4.5.0",
+    "markerjs": "^1.8.1",
+    "moment": "^2.27.0",
+    "nanoid": "^3.1.20",
+    "notistack": "^1.0.3",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.1",
+    "react-div-100vh": "^0.3.8",
+    "react-dom": "^17.0.1",
+    "react-easy-crop": "^3.1.0",
+    "react-filepond": "^7.1.1",
+    "react-hook-form": "^6.14.0",
+    "react-intersection-observer": "^8.31.0",
+    "react-pdf": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.2",
+    "react-sortable-hoc": "^1.11.0",
+    "react-text-mask": "^5.4.3",
+    "socket.io-client": "^3.0.4",
+    "swr": "^0.4.2"
+  },
+  "engines": {
+    "node": "16.1.0",
+    "npm": "7.11.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "GENERATE_SOURCEMAP=false react-scripts --max_old_space_size=4096 build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+delete from photo p where p.id = $1 returning p.id;

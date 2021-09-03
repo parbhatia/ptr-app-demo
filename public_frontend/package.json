@@ -1,0 +1,28 @@
+{
+    "name": "ptr-shareable",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev -p ${PUBLIC_FRONTEND_PORT}",
+        "build": "NODE_ENV=production next build",
+        "start": "next start -p ${PUBLIC_FRONTEND_PORT}"
+    },
+    "dependencies": {
+        "dayjs": "^1.10.4",
+        "file-saver": "^2.0.5",
+        "next": "10.2.0",
+        "nprogress": "^0.2.0",
+        "react": "17.0.1",
+        "react-copy-to-clipboard": "^5.0.3",
+        "react-dom": "17.0.1"
+    },
+    "engines": {
+        "node": "16.1.0",
+        "npm": "7.11.2"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.2.5",
+        "postcss": "^8.2.15",
+        "tailwindcss": "^2.1.2"
+    }
+}

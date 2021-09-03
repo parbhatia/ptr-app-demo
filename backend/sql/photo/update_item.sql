@@ -1,0 +1,1 @@
+update photo set versionid = array_remove(versionid, $2), cdn_keyid = $3 where id = $1 returning id, versionid;

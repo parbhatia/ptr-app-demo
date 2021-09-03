@@ -1,0 +1,1 @@
+insert into file(keyid, name, extension, size, bucket, master_file_store_id) values($/keyid/, $/name/, $/extension/, $/size/, $/bucket/, $/master_file_store_id/) returning *;

@@ -1,0 +1,1 @@
+update $3~ set value = $2 where id = $1 returning id, value;

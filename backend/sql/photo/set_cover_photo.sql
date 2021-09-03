@@ -1,0 +1,1 @@
+update photo set type = 'cover_photo', cdn_keyid = $2 where id = $1 returning id, keyid, type;

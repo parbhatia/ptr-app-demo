@@ -1,0 +1,1 @@
+update $2~ set person_id = null where id = $1 returning id;

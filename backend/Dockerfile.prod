@@ -1,0 +1,56 @@
+FROM node:alpine3.13 as builder
+
+RUN apk update apk upgrade
+RUN apk add zlib libxml2 glib gobject-introspection \
+    libjpeg-turbo libexif lcms2 fftw giflib libpng \
+    libwebp orc tiff poppler-glib librsvg libgsf openexr \
+    libheif libimagequant pango 
+
+# install non vips dependencies, imagemagick is used by vips and pdfmake
+COPY --from=clevyr/pdftk-java /app/ /usr/local/bin/
+RUN apk add openjdk11 imagemagick
+
+RUN apk add --virtual vips-dependencies build-base \
+    make python3 git gcc pkgconfig gtk-doc automake autoconf postgresql-dev g++ \
+    zlib-dev libxml2-dev glib-dev gobject-introspection-dev \
+    libjpeg-turbo-dev libexif-dev lcms2-dev fftw-dev giflib-dev libpng-dev \
+    libwebp-dev orc-dev tiff-dev poppler-dev librsvg-dev libgsf-dev openexr-dev \
+    libheif-dev libimagequant-dev pango-dev \
+    py-gobject3-dev
+
+RUN git clone git://github.com/libvips/libvips.git
+WORKDIR libvips
+RUN ./autogen.sh --enable-silent-rules
+RUN ./configure --enable-silent-rules
+RUN make -s install-strip
+RUN mkdir -p /etc/ld.so.conf.d
+RUN touch /etc/ld.so.conf.d/usrlocal.conf
+RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/usrlocal.conf
+RUN ldconfig -v /etc/ld.so.conf.d 
+RUN rm -rf /tmp/vips
+
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install --ignore-scripts=false --build-from-source --only=production
+
+#delete unused dependencies
+RUN apk del --purge vips-dependencies
+RUN rm -rf /var/cache/apk/*
+
+
+COPY . ./
+
+#generate mjml template
+RUN node scripts/mjml.js
+
+# Install PM2 globally
+RUN npm install --global pm2
+
+# Try to 'squash' every layer into one, and save around 600Mb
+FROM scratch
+COPY --from=builder . .
+WORKDIR /usr/src/app
+USER node
+
+# Run npm start script with PM2 when container starts
+CMD [ "pm2-runtime", "npm", "--", "start" ]

@@ -1,0 +1,1 @@
+update photo set caption = $2 where id = $1 returning id, caption;

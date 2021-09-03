@@ -1,0 +1,88 @@
+version: "3.7"
+
+services:
+  localstack:
+    restart: always
+    labels:
+      com.app.description: "Local Stack"
+    container_name: localstack
+    image: parventures/ptr-demo-localstack 
+    depends_on:
+      - backend
+      - db
+    networks:
+      - ptr
+
+  proxy:
+    restart: always
+    labels:
+      com.app.description: "Reverse Proxy"
+    container_name: proxy
+    image: parventures/ptr-demo-proxy
+    networks:
+      - ptr
+      - nginx-internal
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - frontend
+      - backend
+      - public_frontend
+      - localstack
+
+  db:
+    labels:
+      com.app.description: "Postgres Database"
+    container_name: db
+    image: parventures/ptr-demo-db
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ptr
+      
+  backend:
+    labels:
+      com.app.description: "Backend Service"
+    container_name: backend
+    image: parventures/ptr-demo-backend
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - ptr
+
+  frontend:
+    labels:
+      com.app.description: "Frontend React App"
+    container_name: frontend
+    image: parventures/ptr-demo-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - db
+    networks:
+      - ptr
+
+  public_frontend:
+    labels:
+      com.app.description: "Public Website NextJs"
+    container_name: public_frontend
+    image: parventures/ptr-demo-public_frontend
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - ptr
+
+networks:
+  ptr:
+    driver: bridge
+    name: ptr
+  nginx-internal:
+    driver: bridge
+    name: nginx-internal
