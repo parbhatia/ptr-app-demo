@@ -1,0 +1,36 @@
+services:
+  localstack:
+    env_file:
+      - ./demo.env
+    environment:
+      - SERVICES=lambda,s3,ses,sns
+      - DEBUG=1
+      - PORT_WEB_UI=8081
+      - DOCKER_HOST=unix:///var/run/docker.sock
+
+  proxy:
+    env_file:
+      - ./demo.env
+
+  db:
+    env_file:
+      - ./demo.env
+
+  backend:
+    env_file:
+      - ./demo.env
+    ports:
+      #localstack limitation, just for purpose of demo
+      - 4566:4566
+
+  frontend:
+    env_file:
+      - ./demo.env
+    stdin_open: true
+    environment:
+      #assigns port to create-react-app
+      PORT: ${FRONTEND_PORT}
+
+  public_frontend:
+    env_file:
+      - ./demo.env
