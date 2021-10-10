@@ -1,25 +1,41 @@
 <p align='center'>
 <img src='https://user-images.githubusercontent.com/29555022/132058470-77a0e048-5cc9-4de5-8f39-a4965f6d9299.png' width='350' />
 </p>
-<p style="margin-bottom:0" align='center'>Full Stack Home Inspection App built to streamline the creation, management, and sharing of home inspection reports
+<p style="margin-bottom:0" align='center'>Full Stack Home Inspection App built to streamline the creation and management of home inspections
 </p>
 
-## Features
+## Demo
 
-- **NGINX Reverse Proxy** — Features custom cache stores, CORS configuration, and subrequest authentication, it is used to integrate the following services below.
+<a href="https://app.ptrappdemo.xyz" target="_blank">Here is a live demo</a>
 
-- **Dashboard** — Created using [React](https://reactjs.org) using functional components, hooks, [MaterialUI](https://material-ui.com/), and [Socket.io](https://socket.io/) It allows users to create predefined inspection templates, manage inspections, create dynamic PDF reports, manage inspection photos (with markup, cropping), files, contacts, and emails. This dashboard features creating shareable links to share private data with clients. The UI is suitable for mobile devices. The dashboard runs on http://app.localhost
+```
+username: demo@demo.com
+password: password
+```
 
-- **Public Portal** — Created using [Next.js](https://nextjs.org/) using a combination of static and server side rendering. This is the portal that sits in front of the public internet and is used by clients and visitors. The portal uses server side rendering to validate shareable links shared by the inspectors via the dashboard service. The public portal runs on http://localhost
+Features that are disabled in the demo:
 
-- **Backend REST API** — Created using [Node.js](https://nodejs.org/en/), features auth/access controls, auth using cookies, logging using [winston](https://github.com/winstonjs/winston), and rate limiting. This backend interacts with a postgres database using [pgpromise](http://vitaly-t.github.io/pg-promise/). It uses the [sharp](https://sharp.pixelplumbing.com/) library to optimize image loading and compression; [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/), [handlebars](https://handlebarsjs.com/) and [email-templates](https://github.com/forwardemail/email-templates) to create dynamic pdf and email templates. Postgres database queries are greatly optimized using a system of abstraction and reuse.
+- creating/editing photos and files
+- anything else that requires AWS access
 
-- **Postgres Database** - Features a schema, with full text search, access controls and support for multiple users (inspectors), and stores a wide variety of data (complementing AWS S3, Cloudfront urls, SES, SNS data).
+For full access, follow the [Quickstart](#quickstart) below to deploy locally
+
+## Tech Stack
+
+- **Reverse Proxy** — NGINX server with custom cache stores, CORS configuration, and subrequest authentication, it is used to integrate multiple services
+
+- **Dashboard** — Created using [React](https://reactjs.org) using functional components, hooks, [MaterialUI](https://material-ui.com/), and [Socket.io](https://socket.io/). It allows users to create predefined inspection templates, manage inspections, create dynamic PDF reports, manage inspection photos (with markup, cropping), files, contacts, and emails. This dashboard features creating shareable links to share private data with clients. The UI is suitable for mobile devices. The dashboard runs on http://app.localhost
+
+- **Public Portal** — Uses [Next.js](https://nextjs.org/) static and server side rendering. This is the portal that sits in front of the public internet and is used by clients and visitors. The portal uses server side rendering to validate shareable links shared by the inspectors via the dashboard service. The public portal runs on http://localhost
+
+- **Backend** — Created using [Node.js](https://nodejs.org/en/) with [Express.js](https://expressjs.com/), features auth/access controls, http cookies, logging using [winston](https://github.com/winstonjs/winston), and rate limiting. This backend interacts with a postgres database using [pgpromise](http://vitaly-t.github.io/pg-promise/). It uses the [sharp](https://sharp.pixelplumbing.com/) library to optimize image loading and compression, [pdftk](https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/), [handlebars](https://handlebarsjs.com/) and [email-templates](https://github.com/forwardemail/email-templates) to create dynamic pdf and email templates. Postgres database queries are greatly optimized using a system of abstraction and reuse.
+
+- **Postgres Database** - Uses full text search, access controls and support for multiple users (inspectors), and stores a wide variety of data (AWS S3 urls, Cloudfront urls, SES, SNS data).
 
 ## Important Note
 
-This is a sandboxed demo of a slightly bigger real production app that is currently in use.
-For the purposes of a reasonable demo, this sandbox has a couple limitations that don’t exist in the real production app. It uses a single docker compose file, a single proxy server, has logging enabled, and uses localstack to mimic a subset of AWS services for offline use, and is modified to support a single user, even through the functionality and rules for multiple users exist in the database.
+This is a sandboxed demo of a slightly bigger production app currently in use.
+For the purposes of a reasonable demo, this sandbox has a few limitations. It uses a single docker compose file, a single proxy server, logging, and uses localstack to mimic a subset of AWS services for offline use.
 
 ## Quickstart
 
@@ -111,7 +127,7 @@ This is the server side generated link that will get sent via emails from the da
     </tr>
 </table>
 
-## Manual tinkering
+## Tinkering
 
 If you want to build the docker images yourself, you need to clone all files from the main branch.
 

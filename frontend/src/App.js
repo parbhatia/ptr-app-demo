@@ -16,6 +16,16 @@ import StyledContainer from "./components/StyledContainers/StyledContainer"
 import useDetectOfflineHook from "./Hooks/useDetectOfflineHook"
 import useError from "./Hooks/useError"
 import useRenderMenuBar from "./Hooks/useRenderMenuBar"
+import ReactGA from "react-ga"
+
+const usePageTracking = () => {
+  const location = useLocation()
+
+  useEffect(() => {
+    ReactGA.initialize("G-CND06LEC49")
+    ReactGA.pageview(location.pathname + location.search)
+  }, [location])
+}
 
 const Home = lazy(() => import("./components/Home"))
 const InspectionWrapper = lazy(() =>
@@ -66,17 +76,17 @@ const RouteHandler = () => {
                   <Home />
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"itemstore"}
               path="/Item Store"
               render={() => (
                 <PageTransition>
                   <GlobalMenuBar />
-                  <MasterStore parent={{ id: 1 }} />
+                  <MasterStore parent={{ id: 1 }} />{" "}
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"inspection"}
               path="/Inspection/:id"
@@ -85,7 +95,7 @@ const RouteHandler = () => {
                   <InspectionWrapper />
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"inspectiontemplates"}
               path="/Inspection Templates"
@@ -94,10 +104,10 @@ const RouteHandler = () => {
                   <GlobalMenuBar />
                   <StyledContainer size="lg">
                     <MasterPageStore />
-                  </StyledContainer>
+                  </StyledContainer>{" "}
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"refphotos"}
               path="/Reference Photos"
@@ -106,10 +116,10 @@ const RouteHandler = () => {
                   <GlobalMenuBar />
                   <StyledContainer size="lg">
                     <PhotoCategoryManager type="master_reference" />
-                  </StyledContainer>
+                  </StyledContainer>{" "}
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"refphotocaptionstore"}
               path="/Photo Captions"
@@ -118,10 +128,10 @@ const RouteHandler = () => {
                   <GlobalMenuBar />
                   <StyledContainer size="lg">
                     <MasterPhotoCaptionStore />
-                  </StyledContainer>
+                  </StyledContainer>{" "}
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"outbox"}
               path="/Outbox"
@@ -134,11 +144,11 @@ const RouteHandler = () => {
                       caption="Record of all sent Emails"
                       fetchUrl={`/api/emailrecords/ofUser`}
                       disablePagination={false}
-                    />
-                  </StyledContainer>
+                    />{" "}
+                  </StyledContainer>{" "}
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"contacts"}
               path="/Contacts"
@@ -147,10 +157,10 @@ const RouteHandler = () => {
                   <GlobalMenuBar />
                   <StyledContainer size="lg">
                     <PersonManager fetchUrl={`/api/person`} displayAttributes />
-                  </StyledContainer>
+                  </StyledContainer>{" "}
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"myfiles"}
               path="/My Files"
@@ -159,16 +169,15 @@ const RouteHandler = () => {
                   <GlobalMenuBar />
                   <StyledContainer size="lg">
                     <MasterFileStore />
-                  </StyledContainer>
+                  </StyledContainer>{" "}
                 </PageTransition>
               )}
-            />
+            />{" "}
             <Route
               key={"login"}
               path="/login"
               render={() => <Redirect to={"/"} />}
             />
-
             <Route
               key={"catchall"}
               path="*"
@@ -182,12 +191,12 @@ const RouteHandler = () => {
                     flexDirection="column"
                   >
                     <PageNotFound />
-                  </Box>
+                  </Box>{" "}
                 </PageTransition>
               )}
-            />
-          </Switch>
-        </AnimatePresence>
+            />{" "}
+          </Switch>{" "}
+        </AnimatePresence>{" "}
       </Suspense>
     )
 }
@@ -252,6 +261,7 @@ function isNetworkError(err) {
 const App = () => {
   const [networkError, setNetworkError] = useState(false)
   const [notify] = useError()
+  usePageTracking()
   useEffect(() => {
     axios.interceptors.response.use(
       (res) => res,
