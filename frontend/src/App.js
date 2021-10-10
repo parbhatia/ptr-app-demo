@@ -17,12 +17,11 @@ import useDetectOfflineHook from "./Hooks/useDetectOfflineHook"
 import useError from "./Hooks/useError"
 import useRenderMenuBar from "./Hooks/useRenderMenuBar"
 import ReactGA from "react-ga"
+ReactGA.initialize("UA-206703647-1")
 
 const usePageTracking = () => {
   const location = useLocation()
-
   useEffect(() => {
-    ReactGA.initialize("G-CND06LEC49")
     ReactGA.pageview(location.pathname + location.search)
   }, [location])
 }
