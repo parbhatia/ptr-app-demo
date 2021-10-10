@@ -1,0 +1,88 @@
+version: "3.7"
+
+services:
+  proxy:
+    restart: always
+    labels:
+      com.app.description: "Reverse Proxy"
+    container_name: proxy
+    image: ptr-proxy:${TAG}
+    networks:
+      - ptr
+      - nginx-internal
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - frontend
+      - backend
+      - public_frontend
+
+  db:
+    labels:
+      com.app.description: "Postgres Database"
+    container_name: db
+    image: ptr-db:${TAG}
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ptr
+      
+  backend:
+    labels:
+      com.app.description: "Backend Service"
+    container_name: backend
+    image: ptr-backend:${TAG}
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - ptr
+
+  frontend:
+    labels:
+      com.app.description: "Frontend React App"
+    container_name: frontend
+    image: ptr-frontend:${TAG}
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - db
+    networks:
+      - ptr
+
+  public_frontend:
+    labels:
+      com.app.description: "Public Website NextJs"
+    container_name: public_frontend
+    image: ptr-public_frontend:${TAG}
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - ptr
+networks:
+  ptr:
+    driver: bridge
+    name: ptr
+  nginx-internal:
+    driver: bridge
+    name: nginx-internal
+
+# volumes:
+#   letsencrypt:
+#     name: letsencrypt
+
+#named volume we're storing the certbot generated files mounted to a local host folder
+volumes:
+  letsencrypt:
+    name: letsencrypt
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: letsencrypt

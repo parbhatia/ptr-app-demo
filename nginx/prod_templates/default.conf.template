@@ -5,6 +5,7 @@ proxy_cache_path /var/cache/nginx
     inactive=7d
     use_temp_path=off;
 
+
 #for frontend react app
 proxy_cache_path /tmp/nginx
     levels=1:2
@@ -78,52 +79,40 @@ map $status $status_text {
 #Cors Config:
 map $http_origin $cors_cred {
     default "";
-    http://ptrinspections.com 'true';
-    http://app.ptrinspections.com 'true';
-    https://ptrinspections.com 'true';
-    https://app.ptrinspections.com 'true';
+    http://ptrappdemo.xyz 'true';
+    http://app.ptrappdemo.xyz 'true';
+    https://ptrappdemo.xyz 'true';
+    https://app.ptrappdemo.xyz 'true';
+    http://localhost 'true';
+    http://app.localhost 'true';
+    http://localhost:81 'true';
+    http://localhost:4566 'true';
 }
 map $http_origin $cors_origin_header {
     default 'false';
-    http://ptrinspections.com $http_origin;
-    http://app.ptrinspections.com $http_origin;
-    https://ptrinspections.com $http_origin;
-    https://app.ptrinspections.com $http_origin;
-}
-
-server {
-    listen 80;
-    server_name ptrinspections.com;
-    # Redirect to HTTPS
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 80;
-    server_name app.ptrinspections.com;
-    # Redirect to HTTPS
-    return 301 https://$host$request_uri;
+    http://ptrappdemo.xyz $http_origin;
+    http://app.ptrappdemo.xyz $http_origin;
+    https://ptrappdemo.xyz $http_origin;
+    https://app.ptrappdemo.xyz $http_origin;
+    http://localhost          $http_origin;
+    http://app.localhost      $http_origin;
+    http://localhost:81      $http_origin;
+    http://localhost:4566      $http_origin;
 }
 
 server {
     listen 443 ssl http2;
-    server_name ptrinspections.com;
+    server_name ptrappdemo.xyz;
 
-    ssl_certificate /ssl_keys/ptrinspections.com/ptrinspections_com_chain.pem;
-    ssl_certificate_key /ssl_keys/ptrinspections.com/ptrinspections.pem;
-    ssl_trusted_certificate /ssl_keys/ptrinspections.com/ptrinspections_com_chain.pem;
-    ssl_dhparam /ssl_keys/dhparam/ssl-dhparam.pem;
+    ssl_certificate /etc/letsencrypt/live/ptrappdemo.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ptrappdemo.xyz/privkey.pem;
+
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
     ssl_stapling on;
     ssl_stapling_verify on;
 
-    #we're using certbot's ssl guidelines 
-    ssl_session_cache shared:le_nginx_SSL:10m;
-    ssl_session_timeout 1440m;
-    ssl_session_tickets off;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_prefer_server_ciphers off;
-    ssl_ciphers "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384";
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -192,7 +181,7 @@ server {
     }
 
     location /Login {
-        return 301 $scheme://app.ptrinspections.com;
+        return 301 $scheme://app.ptrappdemo.xyz;
     }
 
     location /shared/ {
@@ -208,23 +197,16 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name app.ptrinspections.com;
+    server_name app.ptrappdemo.xyz;
 
-    ssl_certificate /ssl_keys/app.ptrinspections.com/app_ptrinspections_com_chain.pem;
-    ssl_certificate_key /ssl_keys/app.ptrinspections.com/app.ptrinspections.pem;
-    ssl_trusted_certificate /ssl_keys/app.ptrinspections.com/app_ptrinspections_com_chain.pem;
-    ssl_dhparam /ssl_keys/dhparam/ssl-dhparam.pem;
+    ssl_certificate /etc/letsencrypt/live/ptrappdemo.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ptrappdemo.xyz/privkey.pem;
+
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
     ssl_stapling on;
     ssl_stapling_verify on;
-
-    #we're using certbot's ssl guidelines 
-    ssl_session_cache shared:le_nginx_SSL:10m;
-    ssl_session_timeout 1440m;
-    ssl_session_tickets off;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_prefer_server_ciphers off;
-    ssl_ciphers "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384";
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;

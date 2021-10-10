@@ -20,6 +20,7 @@ npm-debug.log*
 # .env*
 # *.env
 # env
+prod.env
 *.pem
 .log
 logs
@@ -27,3 +28,5 @@ logs
 copy-server-secrets.sh
 
 nginx/log
+nginx/letsencrypt
+backend/logs/*

@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+ENV_FILE='prod.env'
+BASE_YML_FILE='base_unbuilt_prod.yml' #replace with base_unbuilt.yml to build yourself
+DEV_YML_FILE='prod.yml'               #replace with demo_unbuilt.yml to build yourself
+DOCKER_TAG='demo-prod'
+DOCKER_COMPOSE_COMMAND="docker-compose -f $BASE_YML_FILE -f $DEV_YML_FILE --env-file"
+POSTGRES_USER='ptr'
+POSTGRES_DB='ptr_api'
+DB_DUMP_BACKUP_LOCATION="./db/prod_entrypoint/dump"
+
+if [ $# -gt 0 ]; then
+
+    if [ "$1" == "start" ]; then
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE up -d
+
+    elif [ "$1" == "stop" ]; then
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE down
+
+    elif [ "$1" == "reset" ]; then
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE down -v
+
+    elif [ "$1" == "enter" ]; then
+        shift 1
+        docker exec -it $@ sh
+
+    elif [ "$1" == "log" ]; then
+        shift 1
+        docker logs --follow $@
+
+    elif [ "$1" == "destroy" ]; then
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE down -v
+        docker system prune --volume --all
+        # docker image prune --all -f
+        # docker container prune
+
+    elif [ "$1" == "clean" ]; then
+        shift 1
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE down
+        docker image rm ptr-"$@":$DOCKER_TAG -f
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE up --no-cache -d
+
+    elif
+        [ "$1" == "db-backup" ]
+    then
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE exec \
+            db pg_dump -U ${POSTGRES_USER} ${POSTGRES_DB} >"${DB_DUMP_BACKUP_LOCATION}"
+    elif
+        [ "$1" == "db-login" ]
+    then
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE exec \
+            db sh -c \
+            "psql -d ${POSTGRES_DB} -U ${POSTGRES_USER}"
+
+    elif [ "$1" == "reload-nginx" ]; then
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE exec \
+            proxy nginx -s reload
+
+    else
+        $DOCKER_COMPOSE_COMMAND $ENV_FILE "$@"
+    fi
+
+else
+    $DOCKER_COMPOSE_COMMAND $ENV_FILE ps
+fi

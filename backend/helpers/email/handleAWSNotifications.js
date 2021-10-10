@@ -1,7 +1,7 @@
 const debug = require("debug")("backend:handleAWSNotifications")
 const logger = require("../../logger/winston.js")
 const db = require("../../config/db")
-const axios = require('axios')
+const axios = require("axios")
 
 const {
     email_record: {
@@ -13,7 +13,7 @@ const {
     },
 } = require("../../sql")
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === "production"
 
 module.exports = {
     handleDelivery: async(message) => {
@@ -119,7 +119,9 @@ module.exports = {
                     //When using localstack, the SusbcribeURL's hostname does not resolve
                     //quick dirty fix, replace localhost with name of service
 
-                    const parsedUrl = isProd ? url : url.replace("localhost", "localstack")
+                    const parsedUrl = isProd ?
+                        url :
+                        url.replace("localhost", "localstack")
                     debug(parsedUrl)
 
                     try {
@@ -131,8 +133,7 @@ module.exports = {
                             logger.http("AWS subscription confirmed")
                         }
                     } catch (err) {
-                        debug("request failed", error)
-                        reject()
+                        debug("request failed", err)
                     }
                 } else {
                     throw new Error("Mismatch confirmaiton notification")
