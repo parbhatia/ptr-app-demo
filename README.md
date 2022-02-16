@@ -4,22 +4,6 @@
 <p style="margin-bottom:0" align='center'>Full Stack Home Inspection App built to streamline the creation and management of home inspections
 </p>
 
-## Demo
-
-<a href="https://app.ptrappdemo.xyz" target="_blank">Here is a live demo</a>
-
-```
-username: demo@demo.com
-password: password
-```
-
-Features that are disabled in the demo:
-
-- creating/editing photos and files
-- anything else that requires AWS access
-
-For full access, follow the [Quickstart](#quickstart) below to deploy locally
-
 ## Tech Stack
 
 - **Reverse Proxy** — NGINX server with custom cache stores, CORS configuration, and subrequest authentication, it is used to integrate multiple services
